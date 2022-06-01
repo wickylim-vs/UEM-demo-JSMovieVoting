@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
         - name: movie-voting
-          image: vsgdev/jsmovievoting_client:3.0.0
+          image: vsgdev/jsmovievoting_client:1.0.0
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
               path: /
               port: 3000
-          envFrom:
-          - configMapRef:
-              name: client-envs
+          env:
+          - name: REACT_APP_API_URL
+            value: http://34.142.157.209:30500
 
 ---
 apiVersion: v1

@@ -17,17 +17,23 @@ spec:
     spec:
       containers:
         - name: movie-voting-api
-          image: vsgdev/jsmovievoting_api:5.0.0
+          image: vsgdev/jsmovievoting_api:1.0.0
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
               path: /
               port: 5000
-          envFrom:
-          - secretRef:
-              name: postgress-secret
-          - configMapRef:
-              name: api-envs
+          env:
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_DB
+            value: movie
+          - name: POSTGRES_USER
+            value: vsdev
+          - name: POSTGRES_PASSWORD
+            value: 2u5z)qA*DEe?X49K
 
 ---
 apiVersion: v1

@@ -1,4 +1,37 @@
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  labels:
+    app: movie-voting
+spec:
+  capacity:
+    storage: 200Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /var/data/movie-voting-postgres/
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  resources:
+    requests:
+      storage: 200Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard
+  selector:
+    matchLabels:
+      app: movie-voting
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,9 +57,13 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 5432
-          envFrom:
-          - secretRef:
-              name: postgress-secret
+          env:
+          - name: POSTGRES_DB
+            value: movie
+          - name: POSTGRES_USER
+            value: vsdev
+          - name: POSTGRES_PASSWORD
+            value: 2u5z)qA*DEe?X49K
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: postgres-pvc
@@ -35,24 +72,17 @@ spec:
           ports:
             - name: pg-metrics
               containerPort: 9187
-          envFrom:
-          - secretRef:
-              name: postgress-secret
           env:
-            - name: DATA_SOURCE_URI
-              value: "127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable"
-            - name: DATA_SOURCE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgress-secret
-                  key: POSTGRES_USER
-            - name: DATA_SOURCE_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: postgress-secret
-                  key: POSTGRES_PASSWORD
-            - name: PG_EXPORTER_AUTO_DISCOVER_DATABASES
-              value: "true"
+          - name: POSTGRES_DB
+            value: movie
+          - name: DATA_SOURCE_URI
+            value: "127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable"
+          - name: DATA_SOURCE_USER
+            value: vsdev
+          - name: DATA_SOURCE_PASS
+            value: 2u5z)qA*DEe?X49K
+          - name: PG_EXPORTER_AUTO_DISCOVER_DATABASES
+            value: "true"
       volumes:
         - name: postgres-pvc
           persistentVolumeClaim:
