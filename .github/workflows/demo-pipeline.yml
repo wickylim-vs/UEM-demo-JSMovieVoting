@@ -55,8 +55,4 @@ jobs:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
       run: |
-        pwd
-        ls
-        ls k8s/
-        ls k8s/app/
         kubectl apply -f k8s/app/
