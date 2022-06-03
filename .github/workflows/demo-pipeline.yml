@@ -61,5 +61,6 @@ jobs:
       id: setcontext
     - name: Test kubeconfig
       run: |
+        export KUBECONFIG=${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         kubectl config view
         kubectl get ns
