@@ -62,5 +62,7 @@ jobs:
     - name: Test kubeconfig
       run: |
         export KUBECONFIG=${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
+        echo $KUBECONFIG
+        echo $GOOGLE_APPLICATION_CREDENTIALS
         kubectl config view
         kubectl get ns
