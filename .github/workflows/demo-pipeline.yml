@@ -78,28 +78,34 @@ jobs:
           secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB_ENV ;
           secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER_ENV;
           secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD_ENV
-    - name: Update Postgres DB yaml file
-      uses: mikefarah/yq@master
-      with:
-        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/postgres.yml
-      id: postgres-yq
+    - name: Install yq
+      uses: chrisdickinson/setup-yq@latest
+    # - name: Update Postgres DB yaml file
+    #   uses: mikefarah/yq@master
+    #   with:
+    #     cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/postgres.yml
+    #   id: postgres-yq
     - name: Deploy Postgres DB 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
-      run: |
-        echo "${{ steps.postgres-yq.outputs.result }}" | kubectl apply -f -
-    - name: Update API yaml file
-      uses: mikefarah/yq@master
-      with:
-        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/api.yml
-      id: api-yq
+      run: >
+        yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)'
+        ./k8s/app/postgres.yml
+        | kubectl apply -f -
+    # - name: Update API yaml file
+    #   uses: mikefarah/yq@master
+    #   with:
+    #     cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/api.yml
+    #   id: api-yq
     - name: Deploy API 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
-      run: |
-        echo "${{ steps.api-yq.outputs.result }}" | kubectl apply -f -
+      run: >
+        yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)'
+        ./k8s/app/api.yml
+        | kubectl apply -f -
     - name: Deploy Frontend Client
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
