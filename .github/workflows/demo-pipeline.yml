@@ -79,7 +79,8 @@ jobs:
           secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER_ENV;
           secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD_ENV
     - name: Install yq
-      uses: chrisdickinson/setup-yq@latest
+      run: |
+        snap install yq
     # - name: Update Postgres DB yaml file
     #   uses: mikefarah/yq@master
     #   with:
