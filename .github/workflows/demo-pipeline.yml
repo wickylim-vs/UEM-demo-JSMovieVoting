@@ -77,7 +77,7 @@ jobs:
         secrets: |
           secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB ;
           secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER;
-          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PSSWORD
+          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD
     - name: Update Postgres DB yaml file
       uses: mikefarah/yq@master
       with:
