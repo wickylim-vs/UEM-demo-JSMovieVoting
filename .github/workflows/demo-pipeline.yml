@@ -75,13 +75,13 @@ jobs:
         token: ${{ secrets.VAULT_TOKEN }}
         namespace: ${{ secrets.VAULT_NAMESPACE }}
         secrets: |
-          secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB ;
-          secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER;
-          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD
+          secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB_ENV ;
+          secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER_ENV;
+          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD_ENV
     - name: Update Postgres DB yaml file
       uses: mikefarah/yq@master
       with:
-        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/postgres.yml
+        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/postgres.yml
       id: postgres-yq
     - name: Deploy Postgres DB 
       env:
@@ -92,7 +92,7 @@ jobs:
     - name: Update API yaml file
       uses: mikefarah/yq@master
       with:
-        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/api.yml
+        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/api.yml
       id: api-yq
     - name: Deploy API 
       env:
