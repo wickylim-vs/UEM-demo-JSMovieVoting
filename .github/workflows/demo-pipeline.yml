@@ -81,7 +81,7 @@ jobs:
     - name: Update Postgres DB yaml file
       uses: mikefarah/yq@master
       with:
-        cmd: yq '(.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER) | (.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/postgres.yml
+        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/postgres.yml
       id: postgres-yq
     - name: Deploy Postgres DB 
       env:
@@ -92,7 +92,7 @@ jobs:
     - name: Update API yaml file
       uses: mikefarah/yq@master
       with:
-        cmd: yq '(.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER) | (.spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/api.yml
+        cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD)' ./k8s/app/api.yml
       id: api-yq
     - name: Deploy API 
       env:
