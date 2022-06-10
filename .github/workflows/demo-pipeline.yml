@@ -15,8 +15,10 @@ jobs:
       uses: hashicorp/vault-action@v2.4.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
-        token: ${{ secrets.VAULT_TOKEN }}
         namespace: ${{ secrets.VAULT_NAMESPACE }}
+        method: approle
+        roleId: ${{ secrets.VAULT_ROLE_ID }}
+        secretId: ${{ secrets.VAULT_SECRET_ID }}
         secrets: |
           secret/data/ci DOCKERHUB_USERNAME | DOCKERHUB_USERNAME ;
           secret/data/ci DOCKERHUB_TOKEN | DOCKERHUB_TOKEN
@@ -49,12 +51,16 @@ jobs:
       with:
         version: latest
       id: install
+    - name: Setup yq
+      uses: frenck/action-setup-yq@v1
     - name: Import Kubeconfig Secrets from Vault
       uses: hashicorp/vault-action@v2.4.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
-        token: ${{ secrets.VAULT_TOKEN }}
         namespace: ${{ secrets.VAULT_NAMESPACE }}
+        method: approle
+        roleId: ${{ secrets.VAULT_ROLE_ID }}
+        secretId: ${{ secrets.VAULT_SECRET_ID }}
         secrets: |
           secret/data/ci/demo/kube GOOGLE_CRED_FILE | GOOGLE_CRED_FILE ;
           secret/data/ci/demo/kube KUBECONFIG_FILE | KUBECONFIG_FILE
@@ -72,19 +78,14 @@ jobs:
       uses: hashicorp/vault-action@v2.4.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
-        token: ${{ secrets.VAULT_TOKEN }}
         namespace: ${{ secrets.VAULT_NAMESPACE }}
+        method: approle
+        roleId: ${{ secrets.VAULT_ROLE_ID }}
+        secretId: ${{ secrets.VAULT_SECRET_ID }}
         secrets: |
           secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB_ENV ;
           secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER_ENV;
           secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD_ENV
-    - name: Install yq
-      uses: frenck/action-setup-yq@v1
-    # - name: Update Postgres DB yaml file
-    #   uses: mikefarah/yq@master
-    #   with:
-    #     cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/postgres.yml
-    #   id: postgres-yq
     - name: Deploy Postgres DB 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
@@ -93,11 +94,6 @@ jobs:
         yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)'
         ./k8s/app/postgres.yml
         | kubectl apply -f -
-    # - name: Update API yaml file
-    #   uses: mikefarah/yq@master
-    #   with:
-    #     cmd: yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)' ./k8s/app/api.yml
-    #   id: api-yq
     - name: Deploy API 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
