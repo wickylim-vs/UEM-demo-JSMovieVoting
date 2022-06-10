@@ -43,6 +43,9 @@ jobs:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     needs: docker
+    env:
+      google_creds_file: "gsa-key.json"
+      kubeconfig_file: "kubeconfig.yml"
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -51,8 +54,6 @@ jobs:
       with:
         version: latest
       id: install
-    - name: Setup yq
-      uses: frenck/action-setup-yq@v1
     - name: Import Kubeconfig Secrets from Vault
       uses: hashicorp/vault-action@v2.4.0
       with:
@@ -64,15 +65,15 @@ jobs:
         secrets: |
           secret/data/ci/demo/kube GOOGLE_CRED_FILE | GOOGLE_CRED_FILE ;
           secret/data/ci/demo/kube KUBECONFIG_FILE | KUBECONFIG_FILE
-    - name: Configure GKE gsa-key.json file
+    - name: Configure GKE creds file
       run: |
-        echo "$GOOGLE_CRED_FILE" > gsa-key.json
-        echo "::set-output name=GOOGLE_CREDS::$(echo $(pwd)/gsa-key.json)"
+        echo "$GOOGLE_CRED_FILE" > ${{ env.google_creds_file }}
+        echo "::set-output name=GOOGLE_CREDS::$(echo $(pwd)/${{ env.google_creds_file }})"
       id: google-creds
     - name: Configure kubeconfig
       run: |
-        echo -n "$KUBECONFIG_FILE" > kubeconfig.yml
-        echo "::set-output name=KUBECONFIG_FILE::$(echo $(pwd)/kubeconfig.yml)"
+        echo -n "$KUBECONFIG_FILE" > ${{ env.kubeconfig_file }}
+        echo "::set-output name=KUBECONFIG_FILE::$(echo $(pwd)/${{ env.kubeconfig_file }})"
       id: kubeconfig
     - name: Import App Secrets from Vault
       uses: hashicorp/vault-action@v2.4.0
@@ -104,3 +105,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
       run: |
         kubectl apply -f k8s/app/client.yml
+    - name: Cleanup creds files
+      run: |
+        rm ${{ env.google_creds_file }}
+        rm ${{ env.kubeconfig_file }}
