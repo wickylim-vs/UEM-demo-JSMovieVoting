@@ -29,11 +29,11 @@ spec:
           - name: POSTGRES_PORT
             value: "5432"
           - name: POSTGRES_DB
-            value: movie
+            value: ${POSTGRES_DB}
           - name: POSTGRES_USER
-            value: vsdev
+            value: ${POSTGRES_USER}
           - name: POSTGRES_PASSWORD
-            value: 2u5z)qA*DEe?X49K
+            value: ${POSTGRES_PASSWORD}
 
 ---
 apiVersion: v1

@@ -83,25 +83,21 @@ jobs:
         roleId: ${{ secrets.VAULT_ROLE_ID }}
         secretId: ${{ secrets.VAULT_SECRET_ID }}
         secrets: |
-          secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB_ENV ;
-          secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER_ENV;
-          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD_ENV
+          secret/data/ci/demo/app POSTGRES_DB | POSTGRES_DB;
+          secret/data/ci/demo/app POSTGRES_USER | POSTGRES_USER;
+          secret/data/ci/demo/app POSTGRES_PASSWORD | POSTGRES_PASSWORD
     - name: Deploy Postgres DB 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
-      run: >
-        yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER" or .name == "DATA_SOURCE_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD" or .name == "DATA_SOURCE_PASS").value) = strenv(POSTGRES_PASSWORD_ENV)'
-        ./k8s/app/postgres.yml
-        | kubectl apply -f -
+      run: |
+        envsubst < ./k8s/app/postgres.yml | kubectl apply -f -
     - name: Deploy API 
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
-      run: >
-        yq '(select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_DB").value) = strenv(POSTGRES_DB_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_USER").value) = strenv(POSTGRES_USER_ENV) | (select(.kind == "Deployment") | .spec.template.spec.containers[].env[] | select(.name == "POSTGRES_PASSWORD").value) = strenv(POSTGRES_PASSWORD_ENV)'
-        ./k8s/app/api.yml
-        | kubectl apply -f -
+      run: |
+        envsubst < ./k8s/app/api.yml | kubectl apply -f -
     - name: Deploy Frontend Client
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
