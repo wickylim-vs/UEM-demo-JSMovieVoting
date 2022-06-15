@@ -14,7 +14,19 @@ spec:
       labels:
         app: movie-voting
         type: api
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'movie-app'
+        vault.hashicorp.com/namespace: 'admin/'
+        vault.hashicorp.com/agent-inject-secret-configs: 'secret/data/ci/demo/app'
+        vault.hashicorp.com/agent-inject-template-configs: |
+          {{ with secret "secret/data/ci/demo/app" -}}
+          export POSTGRES_DB="{{ .Data.data.POSTGRES_DB }}"
+          export POSTGRES_USER="{{ .Data.data.POSTGRES_USER }}"
+          export POSTGRES_PASSWORD="{{ .Data.data.POSTGRES_PASSWORD }}"
+          {{- end }}
     spec:
+      serviceAccountName: movie-app
       containers:
         - name: movie-voting-api
           image: vsgdev/jsmovievoting_api:1.0.0
@@ -28,12 +40,8 @@ spec:
             value: postgres-service
           - name: POSTGRES_PORT
             value: "5432"
-          - name: POSTGRES_DB
-            value: ${POSTGRES_DB}
-          - name: POSTGRES_USER
-            value: ${POSTGRES_USER}
-          - name: POSTGRES_PASSWORD
-            value: ${POSTGRES_PASSWORD}
+          command: ["/bin/sh"]
+          args: ["-c", "source /vault/secrets/configs && npm start"]
 
 ---
 apiVersion: v1

@@ -98,7 +98,7 @@ jobs:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.google-creds.outputs.GOOGLE_CREDS }}
       run: |
-        envsubst < ./k8s/app/api.yml | kubectl apply -f -
+        kubectl apply -f k8s/app/api.yml
     - name: Deploy Frontend Client
       env:
         KUBECONFIG: ${{ steps.kubeconfig.outputs.KUBECONFIG_FILE }}
