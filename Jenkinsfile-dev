@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs '14.15'
+    }
+
+    stages {
+        stage('Test Client') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+                dir('client') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+            }
+        }
+    }
+}

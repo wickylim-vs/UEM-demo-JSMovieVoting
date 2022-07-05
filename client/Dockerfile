@@ -2,9 +2,9 @@ FROM node:11.14.0-alpine
 
 WORKDIR '/app'
 
-COPY ./package.json ./
+COPY package.json .
 RUN npm install --loglevel=error
 
 COPY . .
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

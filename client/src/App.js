@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
 
-import CaptainMarvel from './images/CaptainMarvel.jpg';
-import Shazam from './images/Shazam.jpg';
-import Avengers from './images/Avengers.jpg';
+import MovieBanner1 from './images/strange.jpg';
+import MovieBanner2 from './images/batman.jpg';
+import MovieBanner3 from './images/avatar.jpg';
 
 class App extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ class App extends Component {
         <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
           <section className="container">
             <div className="navbar-brand">
-              <strong className="navbar-item">Movie Voting 2019</strong>
+              <strong className="navbar-item">Movie Voting App 2022</strong>
             </div>
           </section>
         </nav>
@@ -59,7 +59,7 @@ class App extends Component {
                 <div className="card">
                   <div className="card-image">
                     <figure className="image is-2by3">
-                      <img src={CaptainMarvel} alt="Captain Marvel"/>
+                      <img src={MovieBanner1}/>
                     </figure>
                   </div>
                   <div className="card-content">
@@ -78,7 +78,7 @@ class App extends Component {
                 <div className="card">
                   <div className="card-image">
                     <figure className="image is-2by3">
-                      <img src={Shazam} alt="Shazam!"/>
+                      <img src={MovieBanner2}/>
                     </figure>
                   </div>
                   <div className="card-content">
@@ -97,7 +97,7 @@ class App extends Component {
                 <div className="card">
                   <div className="card-image">
                     <figure className="image is-2by3">
-                      <img src={Avengers} alt="Avengers"/>
+                      <img src={MovieBanner3}/>
                     </figure>
                   </div>
                   <div className="card-content">
@@ -108,11 +108,6 @@ class App extends Component {
                   <div className="card-content">
                     <div className="content">
                       <button className="button is-primary" onClick={() => this.voteMovie(3)}>Vote!</button>
-                    </div>
-                  </div>
-                  <div className="card-content">
-                    <div className="content">
-                      <button className="button is-primary" onClick={() => this.voteMovie(3, 3000)}>Vote 3000!</button>
                     </div>
                   </div>
                 </div>
