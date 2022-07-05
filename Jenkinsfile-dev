@@ -6,10 +6,11 @@ pipeline {
     }
 
     stages {
-        stage('Test') {
+        stage('Test Client') {
             steps {
                 sh 'node -v'
                 sh 'npm -v'
+                sh 'cd client/'
                 sh 'npm install'
                 sh 'npm test'
             }
