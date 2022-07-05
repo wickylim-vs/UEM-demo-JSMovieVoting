@@ -1,9 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs '14.15'
+    }
+
     stages {
         stage('Test') {
             steps {
+                sh 'node -v'
+                sh 'npm -v'
                 sh 'npm install'
                 sh 'npm test'
             }
