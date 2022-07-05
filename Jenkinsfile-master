@@ -18,10 +18,9 @@ pipeline {
         }
 
         stage('SonarQube scan') {
-            def scannerHome = tool 'SonarScanner';
             steps {
                 withSonarQubeEnv('demo-sonarcloud') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                    sh "sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
                 }
             }
         }
