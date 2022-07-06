@@ -18,11 +18,15 @@ pipeline {
         }
 
         stage('SonarQube scan') {
+            environment {
+                SONAR_TOKEN = vault path: 'uemdemo/sonarqube', key: 'auth_token'
+            }
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner';
                     withSonarQubeEnv('demo-sonarcloud') {
-                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                        echo "${SONAR_TOKEN}"
+                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
                     }
                 }
             }
