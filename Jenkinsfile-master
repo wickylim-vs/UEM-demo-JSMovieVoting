@@ -27,7 +27,7 @@ pipeline {
                     def scannerHome = tool 'SonarScanner';
                     withSonarQubeEnv(installationName: 'demo-sonarcloud', envOnly: false) {
                         wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['SONAR_TOKEN'], var: 'SECRET']]]) {
-                            // sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                            // sh '${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=.'
                         }
                     }
                 }
@@ -52,18 +52,36 @@ pipeline {
                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['DOCKER_TOKEN'], var: 'SECRET']]]) {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
                     dir('server') {
-                        sh "docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} ."
-                        sh "docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}"
+                        // sh 'docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .'
+                        // sh 'docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}'
                     }
                     dir('client') {
-                        sh "docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} ."
-                        sh "docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}"
+                        // sh 'docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} .'
+                        // sh 'docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}'
                     }
                 }
             }
             post { 
                 always { 
                     sh "docker logout"
+                }
+            }
+        }
+
+        stage('Deploy to Kuberentes') {
+            environment {
+                GOOGLE_CRED_FILE = vault path: 'secret/uemdemo/kube', key: 'google_cred'
+                KUBECONFIG_FILE = vault path: 'secret/uemdemo/kube', key: 'kubeconfig'
+            }
+            steps {
+                withKubeConfig() {
+                    sh 'echo ${GOOGLE_CRED_FILE} > gsa-key.json'
+                    sh 'echo ${KUBECONFIG_FILE} > kubeconfig.yml'
+                    sh 'export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gsa-key.json"'
+                    sh 'export KUBECONFIG="$(pwd)/kubeconfig.yml"'
+                    sh 'printenv'
+                    sh 'kubectl config view'
+                    sh 'kubectl get all'
                 }
             }
         }
