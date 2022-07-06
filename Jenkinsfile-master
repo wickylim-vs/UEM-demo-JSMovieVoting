@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner';
-                    withSonarQubeEnv('demo-sonarcloud', envOnly: false) {
+                    withSonarQubeEnv(installationName: 'demo-sonarcloud', envOnly: false) {
                         sh "env"
                         sh "printenv"
                         echo "${SONAR_TOKEN}"
