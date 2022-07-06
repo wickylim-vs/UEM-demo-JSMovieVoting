@@ -11,8 +11,8 @@ pipeline {
                 sh 'node -v'
                 sh 'npm -v'
                 dir('client') {
-                    sh 'npm install'
-                    sh 'npm test'
+                    // sh 'npm install'
+                    // sh 'npm test'
                 }
             }
         }
@@ -22,6 +22,8 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner';
                     withSonarQubeEnv('demo-sonarcloud') {
+                        sh "ls ${scannerHome}"
+                        sh "ls ${scannerHome}/bin"
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
                     }
                 }
