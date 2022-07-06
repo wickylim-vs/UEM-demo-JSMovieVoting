@@ -76,12 +76,12 @@ pipeline {
             steps {
                 sh 'echo ${GOOGLE_CRED_FILE} > gsa-key.json'
                 sh 'echo ${KUBECONFIG_FILE} > kubeconfig.yml'
-                sh 'export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gsa-key.json"'
-                sh 'export KUBECONFIG="$(pwd)/kubeconfig.yml"'
-                sh 'printenv'
-                sh 'kubectl config view'
-                sh 'kubectl get all'
+                withEnv(['GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gsa-key.json"', 'KUBECONFIG="$(pwd)/kubeconfig.yml"']) {
+                    sh 'printenv'
+                    sh 'kubectl config view'
+                    sh 'kubectl get all'
+                }
             }
         }
     }
-}
+}s
