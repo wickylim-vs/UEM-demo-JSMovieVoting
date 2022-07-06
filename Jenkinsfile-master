@@ -50,7 +50,7 @@ pipeline {
             }
             steps {
                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['DOCKER_TOKEN'], var: 'SECRET']]]) {
-                    sh "echo ${DOCKER_TOKEN} | docker login --username ${DOCKER_USERNAME} --password-stdin"
+                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
                     dir('server') {
                         sh "docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT}"
                         sh "docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}"
