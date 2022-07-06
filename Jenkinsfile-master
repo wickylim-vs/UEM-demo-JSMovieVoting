@@ -76,9 +76,8 @@ pipeline {
                 KUBECONFIG = '/tmp/kubeconfig.yml'
             }
             steps {
-                sh 'echo ${GOOGLE_CRED_FILE} > /gsa-key.json'
-                sh 'echo ${KUBECONFIG_FILE} > /kubeconfig.yml'
-
+                sh 'echo ${GOOGLE_CRED_FILE} > ${GOOGLE_APPLICATION_CREDENTIALS}'
+                sh 'echo ${KUBECONFIG_FILE} > ${KUBECONFIG}'
                 sh 'printenv'
                 sh 'kubectl config view'
                 sh 'kubectl get all'
