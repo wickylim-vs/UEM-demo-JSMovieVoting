@@ -22,9 +22,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner';
                     withSonarQubeEnv('demo-sonarcloud') {
-                        sh "ls -al ${scannerHome}/../"
-                        sh "ls -al ${scannerHome}/bin"
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                        sh "${scannerHome}/sonar-scanner-cli-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
                     }
                 }
             }
