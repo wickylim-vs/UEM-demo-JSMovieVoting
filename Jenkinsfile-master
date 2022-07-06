@@ -24,7 +24,9 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner';
-                    withSonarQubeEnv('demo-sonarcloud') {
+                    withSonarQubeEnv('demo-sonarcloud', envOnly: false) {
+                        sh "env"
+                        sh "printenv"
                         echo "${SONAR_TOKEN}"
                         sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
                     }
