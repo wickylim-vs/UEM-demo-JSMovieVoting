@@ -17,22 +17,18 @@ pipeline {
             }
         }
 
-        stage('SonarQube scan') {
+        stage('SonarQube Scan') {
             environment {
                 SONAR_TOKEN = vault path: 'secret/uemdemo/sonarqube', key: 'auth_token'
             }
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner';
-                    // def vault_secrets = [
-                    //     [path: 'secret/uemdemo/sonarqube', engineVersion: 2, secretValues: [
-                    //         [vaultKey: 'auth_token']]]
-                    // ]
                     withSonarQubeEnv(installationName: 'demo-sonarcloud', envOnly: false) {
-                        sh "env"
-                        sh "printenv"
-                        echo "${SONAR_TOKEN}"
-                        sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                        wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['SONAR_TOKEN'], var: 'SECRET']]]) {
+                            echo "${SONAR_TOKEN}"
+                            sh "${scannerHome}/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.organization=wickylim-vs -Dsonar.projectKey=jsmovievoting -Dsonar.sources=."
+                        }
                     }
                 }
             }
