@@ -72,15 +72,16 @@ pipeline {
             environment {
                 GOOGLE_CRED_FILE = vault path: 'secret/uemdemo/kube', key: 'google_cred'
                 KUBECONFIG_FILE = vault path: 'secret/uemdemo/kube', key: 'kubeconfig'
+                GOOGLE_APPLICATION_CREDENTIALS = '/tmp/gsa-key.json'
+                KUBECONFIG = '/tmp/kubeconfig.yml'
             }
             steps {
-                sh 'echo ${GOOGLE_CRED_FILE} > gsa-key.json'
-                sh 'echo ${KUBECONFIG_FILE} > kubeconfig.yml'
-                withEnv(['GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gsa-key.json"', 'KUBECONFIG="$(pwd)/kubeconfig.yml"']) {
-                    sh 'printenv'
-                    sh 'kubectl config view'
-                    sh 'kubectl get all'
-                }
+                sh 'echo ${GOOGLE_CRED_FILE} > /gsa-key.json'
+                sh 'echo ${KUBECONFIG_FILE} > /kubeconfig.yml'
+
+                sh 'printenv'
+                sh 'kubectl config view'
+                sh 'kubectl get all'
             }
         }
     }
