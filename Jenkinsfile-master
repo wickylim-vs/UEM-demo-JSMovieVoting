@@ -19,7 +19,7 @@ pipeline {
 
         stage('SonarQube scan') {
             environment {
-                SONAR_TOKEN = vault path: 'uemdemo/sonarqube', key: 'auth_token'
+                SONAR_TOKEN = vault path: 'secret/data/uemdemo/sonarqube', key: 'auth_token'
             }
             steps {
                 script {
