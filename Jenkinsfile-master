@@ -52,12 +52,12 @@ pipeline {
                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['DOCKER_TOKEN'], var: 'SECRET']]]) {
                     sh 'docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}'
                     dir('server') {
-                        // sh 'docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .'
-                        // sh 'docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}'
+                        sh 'docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .'
+                        sh 'docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}'
                     }
                     dir('client') {
-                        // sh 'docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} .'
-                        // sh 'docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}'
+                        sh 'docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} .'
+                        sh 'docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}'
                     }
                 }
             }
