@@ -78,11 +78,24 @@ pipeline {
                 POSTGRES_PASSWORD = vault path: 'secret/uemdemo/app', key: 'postgres_pass'
             }
             steps {
-                sh 'echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}'
-                sh 'echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}'
-                
-                //Deploy postgres
-                sh 'envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -'
+                wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [
+                    [password: env['GOOGLE_CRED_FILE'], var: 'SECRET'],
+                    [password: env['KUBECONFIG_FILE'], var: 'SECRET'],
+                    [password: env['POSTGRES_USER'], var: 'SECRET'],
+                    [password: env['POSTGRES_PASSWORD'], var: 'SECRET']
+                    ]]) {
+                    sh 'echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}'
+                    sh 'echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}'
+                    
+                    //Deploy postgres
+                    sh 'envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -'
+                }
+            }
+            post { 
+                always { 
+                    sh 'rm ${GOOGLE_APPLICATION_CREDENTIALS}'
+                    sh 'rm ${KUBECONFIG}'
+                }
             }
         }
     }
