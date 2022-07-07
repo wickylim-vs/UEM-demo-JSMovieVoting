@@ -22,14 +22,14 @@ spec:
         vault.hashicorp.com/agent-inject-secret-configs: 'secret/data/uemdemo/app'
         vault.hashicorp.com/agent-inject-template-configs: |
           {{ with secret "secret/data/uemdemo/app" -}}
-          export POSTGRES_USER="{{ .Data.data.user }}"
-          export POSTGRES_PASSWORD="{{ .Data.data.password }}"
+          export POSTGRES_USER="{{ .Data.data.postgres_user }}"
+          export POSTGRES_PASSWORD="{{ .Data.data.postgres_pass }}"
           {{- end }}
     spec:
       serviceAccountName: movie-app
       containers:
         - name: movie-voting-api
-          image: vsgdev/jsmovievoting_api:1.0.0
+          image: vsgdev/jsmovievoting_api:${IMAGE_VERSION}
           imagePullPolicy: Always
           readinessProbe:
             httpGet:

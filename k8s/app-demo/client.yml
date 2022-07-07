@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: movie-voting
-          image: vsgdev/jsmovievoting_client:1.0.0
+          image: vsgdev/jsmovievoting_client:${IMAGE_VERSION}
           imagePullPolicy: Always
           readinessProbe:
             httpGet:

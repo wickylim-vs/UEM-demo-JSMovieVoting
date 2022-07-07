@@ -50,7 +50,7 @@ pipeline {
             }
             steps {
                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['DOCKER_TOKEN'], var: 'SECRET']]]) {
-                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
+                    sh 'docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}'
                     dir('server') {
                         // sh 'docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .'
                         // sh 'docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}'
@@ -82,13 +82,21 @@ pipeline {
                     [password: env['GOOGLE_CRED_FILE'], var: 'SECRET'],
                     [password: env['KUBECONFIG_FILE'], var: 'SECRET'],
                     [password: env['POSTGRES_USER'], var: 'SECRET'],
-                    [password: env['POSTGRES_PASSWORD'], var: 'SECRET']
-                    ]]) {
-                    sh 'echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}'
-                    sh 'echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}'
+                    [password: env['POSTGRES_PASSWORD'], var: 'SECRET']]]) {
+                    sh '''
+                        set +x
+                        echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}
+                        echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}
+                    '''
                     
                     //Deploy postgres
                     sh 'envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -'
+
+                    //Deploy api
+                    sh 'IMAGE_VERSION=${GIT_COMMIT} envsubst < ./k8s/app-demo/api.yml | kubectl apply -f -'
+
+                    //Deploy client
+                    sh 'IMAGE_VERSION=${GIT_COMMIT} envsubst < ./k8s/app-demo/client.yml | kubectl apply -f -'
                 }
             }
             post { 
