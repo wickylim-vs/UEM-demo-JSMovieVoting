@@ -74,13 +74,15 @@ pipeline {
                 KUBECONFIG_FILE = vault path: 'secret/uemdemo/kube', key: 'kubeconfig'
                 GOOGLE_APPLICATION_CREDENTIALS = '/tmp/gsa-key.json'
                 KUBECONFIG = '/tmp/kubeconfig.yml'
+                POSTGRES_USER = vault path: 'secret/uemdemo/app', key: 'postgres_user'
+                POSTGRES_PASSWORD = vault path: 'secret/uemdemo/app', key: 'postgres_pass'
             }
             steps {
                 sh 'echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}'
                 sh 'echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}'
-                sh 'cat ${GOOGLE_APPLICATION_CREDENTIALS}'
-                sh 'kubectl config view'
-                sh 'kubectl get all'
+                
+                //Deploy postgres
+                sh 'envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -'
             }
         }
     }
