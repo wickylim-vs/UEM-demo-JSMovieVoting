@@ -78,7 +78,7 @@ pipeline {
             steps {
                 sh 'echo "${GOOGLE_CRED_FILE}" > ${GOOGLE_APPLICATION_CREDENTIALS}'
                 sh 'echo "${KUBECONFIG_FILE}" > ${KUBECONFIG}'
-                sh 'printenv'
+                sh 'cat ${GOOGLE_APPLICATION_CREDENTIALS}'
                 sh 'kubectl config view'
                 sh 'kubectl get all'
             }
