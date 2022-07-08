@@ -65,6 +65,8 @@ spec:
             value: ${POSTGRES_USER}
           - name: POSTGRES_PASSWORD
             value: ${POSTGRES_PASSWORD}
+          - name: PGDATA
+            vaule: /var/lib/postgresql/data/jsmovievoting/
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: postgres-pvc
