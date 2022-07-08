@@ -12,8 +12,10 @@ pipeline {
                 sh 'node -v'
                 sh 'npm -v'
                 dir('client') {
-                    // sh 'npm install'
-                    // sh 'npm test'
+                    sh '''
+                        npm install
+                        npm test
+                    '''
                 }
             }
         }
@@ -52,12 +54,16 @@ pipeline {
                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: env['DOCKER_TOKEN'], var: 'SECRET']]]) {
                     sh 'docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}'
                     dir('server') {
-                        sh 'docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .'
-                        sh 'docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}'
+                        sh '''
+                            docker build -t vsgdev/jsmovievoting_api:${GIT_COMMIT} .
+                            docker push vsgdev/jsmovievoting_api:${GIT_COMMIT}
+                        '''
                     }
                     dir('client') {
-                        sh 'docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} .'
-                        sh 'docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}'
+                        sh '''
+                            docker build -t vsgdev/jsmovievoting_client:${GIT_COMMIT} .
+                            docker push vsgdev/jsmovievoting_client:${GIT_COMMIT}
+                        '''
                     }
                 }
             }
@@ -90,7 +96,10 @@ pipeline {
                     '''
                     
                     //Deploy postgres
-                    sh 'envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -'
+                    sh '''
+                        kubectl delete -f ./k8s/app-demo/postgres.yml
+                        POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -
+                    '''
 
                     //Deploy api
                     sh 'IMAGE_VERSION=${GIT_COMMIT} envsubst < ./k8s/app-demo/api.yml | kubectl apply -f -'
