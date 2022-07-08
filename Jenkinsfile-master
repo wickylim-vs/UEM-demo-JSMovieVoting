@@ -96,10 +96,10 @@ pipeline {
                     '''
                     
                     //Deploy postgres
-                    sh '''
-                        kubectl delete -f ./k8s/app-demo/postgres.yml
-                        POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -
-                    '''
+                    // sh '''
+                    //     kubectl delete -f ./k8s/app-demo/postgres.yml
+                    //     POSTGRES_USER=${POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} envsubst < ./k8s/app-demo/postgres.yml | kubectl apply -f -
+                    // '''
 
                     //Deploy api
                     sh 'IMAGE_VERSION=${GIT_COMMIT} envsubst < ./k8s/app-demo/api.yml | kubectl apply -f -'
