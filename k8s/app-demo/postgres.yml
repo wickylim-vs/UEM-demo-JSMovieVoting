@@ -9,11 +9,15 @@ spec:
   capacity:
     storage: 200Mi
   accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
   storageClassName: standard
-  hostPath:
-    path: /var/data/movie-voting-postgres/
+  # accessModes:
+  #   - ReadWriteMany
+  # persistentVolumeReclaimPolicy: Retain
+  # storageClassName: standard
+  # hostPath:
+  #   path: /var/data/movie-voting-postgres/
 
 ---
 apiVersion: v1
@@ -25,7 +29,7 @@ spec:
     requests:
       storage: 200Mi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: standard
   selector:
     matchLabels:
