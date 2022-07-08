@@ -25,7 +25,7 @@ spec:
               port: 3000
           env:
           - name: REACT_APP_API_URL
-            value: http://34.142.157.209:30500
+            value: http://34.142.141.210:30500
 
 ---
 apiVersion: v1
