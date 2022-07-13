@@ -5,6 +5,20 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 var swStats = require('swagger-stats');
 
+const winston = require('winston');
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  defaultMeta: { service: 'movie-voting-service' },
+  transports: [
+    new winston.transports.Console()
+  ],
+});
+
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -19,23 +33,25 @@ const pgClient = new Pool({
   password: keys.pgPassword,
   port: keys.pgPort,
 });
-pgClient.on('error', () => console.log("PG connection error."));
+pgClient.on('error', () => logger.error("PG connection error."));
 
 pgClient
   .query('CREATE TABLE IF NOT EXISTS movies (movie_id INT, votes INT)')
-  .catch(err => console.log(err));
+  .catch(err => logger.error(err));
 
 // Express API
 app.get('/', (req, res) => {
   res.send('Hello, Movie Voters!');
+  logger.info("Hello!");
 });
 
 app.get('/movies', async (req, res, next) => {
   try {
     const movies = await pgClient.query('SELECT * FROM movies')
     res.send(movies.rows);
+    logger.info("GET movies...");
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     next(err);
   }
 });
@@ -55,13 +71,13 @@ app.post('/movies', async (req, res, next) => {
       const movie = await pgClient.query('INSERT INTO movies(movie_id, votes) VALUES($1, $2) RETURNING movie_id, votes', [id, votesIncrement])
       res.send(movie.rows[0]);
     }
-    console.log("Vote for Movie %s", id);
+    logger.info("Votes for Movie %s", id);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     next(err);
   }
 });
 
-app.listen(5000, err => {
-  console.log('listening');
+app.listen(5001, err => {
+  logger.info('listening');
 });
