@@ -3,7 +3,7 @@ const keys = require('./keys');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-var swStats = require('swagger-stats');
+const swStats = require('swagger-stats');
 
 const winston = require('winston');
 const logger = winston.createLogger({
@@ -17,7 +17,6 @@ const logger = winston.createLogger({
     new winston.transports.Console()
   ],
 });
-
 
 const app = express();
 app.use(cors());
@@ -78,6 +77,6 @@ app.post('/movies', async (req, res, next) => {
   }
 });
 
-app.listen(5001, err => {
+app.listen(5000, err => {
   logger.info('listening');
 });
