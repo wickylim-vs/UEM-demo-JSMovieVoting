@@ -35,9 +35,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Save container image
+    - name: Placeholder step
       uses: Consensys/kubernetes-action@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: config view
+    - name: Placeholder step 2
+      uses: Consensys/kubernetes-action@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: get po -A
