@@ -1,0 +1,23 @@
+name: Hello World
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Hello World
+        run: echo ${{ github.repository }}
+        
+      - name: Checkout code
+        uses: action/checkout@v3
+        with: 
+          repository: ${{ github.repository }}
+          
+
+
+        
