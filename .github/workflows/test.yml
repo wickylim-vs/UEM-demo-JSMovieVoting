@@ -10,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print Hello World
+        run: echo ${{ github.repository }}
+        
       - name: Checkout code
         uses: action/checkout@v3
         with: 
           repository: ${{ github.repository }}
           
 
-      - name: Print Hello World
-        run: echo ${{ github.repository }}
+
         
