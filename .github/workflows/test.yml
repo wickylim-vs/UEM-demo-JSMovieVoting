@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: action/checkout@v3
+        with: 
+          repository: ${{ github.repository }}
+          
 
       - name: Print Hello World
-        run: echo "Hello World"
+        run: echo ${{ github.repository }}
+        
